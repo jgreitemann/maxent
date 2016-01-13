@@ -37,3 +37,13 @@ s = Sigma.size
 V = V[:,:s]
 U = U[:,:s]
 
+# default model
+ms = 0.1 * np.ones(1001)
+
+
+u = np.arange(s)
+
+# convert solution back to spectrum
+As = ms * np.exp(np.dot(U, u))
+for omega, A in itertools.izip(omegas, As):
+    print omega, A
