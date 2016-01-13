@@ -29,7 +29,7 @@ Gerrs = np.array(Gerrs)
 omegas = np.linspace(0, 10, 1001)
 K = kernels.imagt_kernel(taus, omegas, args.beta)
 V, Sigma, U = np.linalg.svd(K)
-U = U.T.conj()
+U = U.T
 
 # project into singular space
 Sigma = np.array(list(itertools.takewhile(lambda x: x > args.cutoff, Sigma)))
