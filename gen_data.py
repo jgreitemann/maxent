@@ -34,4 +34,4 @@ if not args.exact:
     green *= 1 + args.eta * np.random.standard_normal(green.shape)
 
 for tau, G in izip(taus, green):
-    print tau, G
+    print tau, G, args.eta * G if not args.exact else 0
