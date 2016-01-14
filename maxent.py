@@ -11,6 +11,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--alpha", type=float)
 parser.add_argument("--beta", type=float)
 parser.add_argument("--cutoff", type=float, default=1e-10)
+parser.add_argument("-t", "--threshold", type=float, default=1e-5)
 args, unk = parser.parse_known_args()
 alpha = args.alpha
 
@@ -49,7 +50,8 @@ norm = np.linalg.norm(ms, ord=1)
 mu = 0.
 u = np.zeros(s)
 u[0] = 1.
-for i in range(10):
+converged = False
+while not converged:
     As = ms * np.exp(np.dot(U, u))
     F = np.dot(VSigma, np.dot(U.T, As))
     g = np.dot(VSigma.T, np.dot(W, (F - Gs)))
@@ -62,7 +64,12 @@ for i in range(10):
     Yinv = np.dot(R.T, np.dot(np.diag(np.sqrt(Gamma)), P.T))
     Yinv_du = -np.dot(Yinv, alpha*u + g) / (alpha + mu + Lambda)
     du = (-alpha * u - g - np.dot(M, np.dot(Yinv.T, Yinv_du))) / (alpha + mu)
+    Tu = np.dot(T, u)
+    Tg = np.dot(T, g)
     u += du
+    t = 2 * np.linalg.norm(alpha*Tu + Tg)**2\
+            / (alpha*np.linalg.norm(Tu) + np.linalg.norm(Tg))**2
+    converged = t < args.threshold
 
 # convert solution back to spectrum
 As = ms * np.exp(np.dot(U, u))
