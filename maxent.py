@@ -72,7 +72,7 @@ for alpha in alphas:
         Lambda, R = np.linalg.eigh(B)
         Yinv = np.dot(R.T, np.dot(np.diag(np.sqrt(Gamma)), P.T))
         Yinv_du = -np.dot(Yinv, alpha*u + g) / (alpha + mu + Lambda)
-        du = (-alpha * u - g - np.dot(M, np.dot(Yinv.T, Yinv_du))) / (alpha + mu)
+        du = (-alpha * u - g - np.dot(M, np.dot(Yinv.T, Yinv_du))) / (alpha+mu)
         Tu = np.dot(T, u)
         Tg = np.dot(T, g)
         u += du
@@ -91,7 +91,8 @@ for alpha in alphas:
     Ass.append(As)
 posteriors = np.array(posteriors)
 posteriors /= args.alpha / args.Nalpha * sum(posteriors)
-meanAs = sum(p * A for p, A in itertools.izip(posteriors, Ass))
+meanAs = args.alpha / args.Nalpha \
+         * sum(p * A for p, A in itertools.izip(posteriors, Ass))
 for a, p in itertools.izip(alphas, posteriors):
     print a, p
 print ''
