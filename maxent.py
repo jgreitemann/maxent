@@ -42,6 +42,11 @@ K = kernels.imagt_kernel(taus, omegas, args.beta)
 V, Sigma, U = np.linalg.svd(K)
 U = U.T
 
+# print the singular values
+for s in Sigma:
+    print(s)
+print('\n')
+
 # project into singular space
 Sigma = np.array(list(itertools.takewhile(lambda x: x > args.cutoff, Sigma)))
 s = Sigma.size
