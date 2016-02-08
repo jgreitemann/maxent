@@ -96,7 +96,7 @@ for alpha, percent in zip(alphas, np.linspace(0, 100, alphas.size)):
     C = np.dot(KsqAs.T, np.dot(W, KsqAs))
     Lambda = np.linalg.eigvalsh(C)
     chi_sq = np.linalg.norm((Gs - F)/Gerrs)**2
-    S = sum(As - ms - As * np.log(As/ms))
+    S = np.sum(As - ms) - np.nansum(As * np.log(As/ms))
     posteriors.append(product(np.sqrt(alpha / (alpha + Lambda)))
                       * np.exp(alpha * S - .5 * chi_sq) / alpha)
     Ass.append(As)
