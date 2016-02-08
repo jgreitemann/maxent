@@ -1,14 +1,15 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 
 import numpy as np
 import kernels
 import fileinput
 import argparse
 import itertools
+import functools
 import operator
 
 def product(it):
-    return reduce(operator.__mul__, it)
+    return functools.reduce(operator.__mul__, it)
 
 # parse arguments
 parser = argparse.ArgumentParser()
@@ -91,11 +92,9 @@ for alpha in alphas:
     Ass.append(As)
 posteriors = np.array(posteriors)
 posteriors /= args.alpha / args.Nalpha * sum(posteriors)
-meanAs = args.alpha / args.Nalpha \
-         * sum(p * A for p, A in itertools.izip(posteriors, Ass))
-for a, p in itertools.izip(alphas, posteriors):
-    print a, p
-print ''
-print ''
-for omega, A in itertools.izip(omegas, meanAs):
-    print omega, A
+meanAs = args.alpha / args.Nalpha * sum(p * A for p, A in zip(posteriors, Ass))
+for a, p in zip(alphas, posteriors):
+    print(a, p)
+print('\n')
+for omega, A in zip(omegas, meanAs):
+    print (omega, A)
