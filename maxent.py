@@ -7,6 +7,7 @@ import argparse
 import itertools
 import functools
 import operator
+import sys
 
 def product(it):
     return functools.reduce(operator.__mul__, it)
@@ -47,6 +48,8 @@ s = Sigma.size
 V = V[:,:s]
 U = U[:,:s]
 VSigma = np.dot(V, np.diag(Sigma))
+print('Singular space dimension: ', s, ' (down from ',
+      min(taus.size, omegas.size), ')', sep='', file=sys.stderr)
 
 # default model
 ms = 0.1 * np.ones(1001)
@@ -59,7 +62,9 @@ u[0] = 1.
 As = ms * np.exp(np.dot(U, u))
 posteriors = []
 Ass = []
-for alpha in alphas:
+for alpha, percent in zip(alphas, np.linspace(0, 100, alphas.size)):
+    print('Calculating alpha = ', alpha, ' (', int(percent), '%) ',
+          sep='', end='\r', file=sys.stderr)
     # Newton iteration
     converged = False
     while not converged:
