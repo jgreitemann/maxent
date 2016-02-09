@@ -63,7 +63,7 @@ ms = 0.1 * np.ones(omegas.size)
 norm = np.linalg.norm(ms, ord=1)
 
 # loop over alpha parameters
-mu = 0.
+nu = 2.
 u = np.zeros(s)
 u[0] = 1.
 As = ms * np.exp(np.dot(U, u))
@@ -74,6 +74,7 @@ for alpha, percent in zip(alphas, np.linspace(0, 100, alphas.size)):
           sep='', end='\r', file=sys.stderr)
     # Newton iteration
     converged = False
+    mu = alpha
     while not converged:
         F = np.dot(VSigma, np.dot(U.T, As))
         g = np.dot(VSigma.T, np.dot(W, (F - Gs)))
@@ -85,12 +86,20 @@ for alpha, percent in zip(alphas, np.linspace(0, 100, alphas.size)):
         Lambda, R = np.linalg.eigh(B)
         Yinv = np.dot(R.T, np.dot(np.diag(np.sqrt(Gamma)), P.T))
         Yinv_du = -np.dot(Yinv, alpha*u + g) / (alpha + mu + Lambda)
+        print(mu, np.linalg.norm(Yinv_du)**2, file=sys.stderr)
+        if np.linalg.norm(Yinv_du)**2 > 2 * norm:
+            mu *= nu
+            continue
+        elif np.linalg.norm(Yinv_du)**2 < 0.01 * norm:
+            mu /= nu
+            continue
         du = (-alpha * u - g - np.dot(M, np.dot(Yinv.T, Yinv_du))) / (alpha+mu)
         Tu = np.dot(T, u)
         Tg = np.dot(T, g)
         u += du
         t = 2 * np.linalg.norm(alpha*Tu + Tg)**2\
                 / (alpha*np.linalg.norm(Tu) + np.linalg.norm(Tg))**2
+        print(t, file=sys.stderr)
         converged = t < args.threshold
         As = ms * np.exp(np.dot(U, u))
     F = np.dot(VSigma, np.dot(U.T, As))
