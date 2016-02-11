@@ -19,8 +19,10 @@ parser.add_argument("--beta", type=float)
 parser.add_argument("--cutoff", type=float, default=1e-10)
 parser.add_argument("-t", "--threshold", type=float, default=1e-5)
 parser.add_argument("--Nalpha", type=int, default=100)
+parser.add_argument("--skip", type=int, default=0)
 args, unk = parser.parse_known_args()
 alphas = np.linspace(args.alpha / args.Nalpha, args.alpha, args.Nalpha)
+alphas = alphas[args.skip:]
 
 # read in Green function data
 taus = []
@@ -37,7 +39,7 @@ Gerrs = np.array(Gerrs)
 W = np.diag(Gerrs**(-2))
 
 # perform SVD on the kernel
-omegas = np.linspace(0, 10, 1001)
+omegas = np.linspace(0, 5, 501)
 K = kernels.imagt_kernel(taus, omegas, args.beta)
 V, Sigma, U = np.linalg.svd(K)
 U = U.T
@@ -57,7 +59,7 @@ print('Singular space dimension: ', s, ' (down from ',
       min(taus.size, omegas.size), ')', sep='', file=sys.stderr)
 
 # default model
-ms = 0.1 * np.ones(1001)
+ms = 0.1 * np.ones(omegas.size)
 norm = np.linalg.norm(ms, ord=1)
 
 # loop over alpha parameters
